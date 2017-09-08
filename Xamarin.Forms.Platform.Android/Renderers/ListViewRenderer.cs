@@ -8,6 +8,7 @@ using AView = Android.Views.View;
 using Xamarin.Forms.Internals;
 using System;
 using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
+using System.Collections.Generic;
 
 namespace Xamarin.Forms.Platform.Android
 {

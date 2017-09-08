@@ -20,7 +20,7 @@ namespace Xamarin.Forms.Controls.Issues
 	[Preserve(AllMembers = true)]
 	[Issue(
 		IssueTracker.Bugzilla,
-		52487,
+		502487,
 		"ListView with Recycle + HasUnevenRows generates lots (and lots!) of content view",
 		// https://bugzilla.xamarin.com/show_bug.cgi?id=52487
 		PlatformAffected.iOS
@@ -48,6 +48,9 @@ namespace Xamarin.Forms.Controls.Issues
 		const int GroupCount = 100;
 		const int DefaultItemHeight = 300 / 4;
 		const int MinimumItemHeight = 40;
+
+		// dis-enable item type when % item id is zero
+		const int DisableModulous = 11;
 
 		// generate alternate item type when % item id is zero
 		const int ItemTypeModulous = 7;
@@ -377,11 +380,16 @@ namespace Xamarin.Forms.Controls.Issues
 					if (itemType != expectedItemType)
 						throw new ArgumentException(
 							$"Item.Id = {BindingContext?.Id}, ItemType {GetType().Name}!={expectedItemType.Name}");
+
 				}
 
 				protected override void OnAppearing()
 				{
+					//IsEnabled = ItemId % DisableModulous == 0;
+
 					_label.Text = ToString();
+					_label.FontAttributes = IsEnabled ? FontAttributes.Italic : FontAttributes.None;
+
 					__counter.AttachCell(_id);
 				}
 

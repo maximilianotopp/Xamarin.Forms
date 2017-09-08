@@ -33,6 +33,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		int _listCount = -1; // -1 we need to get count from the list
 		Cell _enabledCheckCell;
+		Dictionary<object, Cell> _prototypicalCellByTypeOrDataTemplate;
 
 		bool _fromNative;
 		AView _lastSelected;
@@ -46,6 +47,7 @@ namespace Xamarin.Forms.Platform.Android
 			_context = context;
 			_realListView = realListView;
 			_listView = listView;
+			_prototypicalCellByTypeOrDataTemplate = new Dictionary<object, Cell>();
 
 			if (listView.SelectedItem != null)
 				SelectItem(listView.SelectedItem);
@@ -309,6 +311,38 @@ namespace Xamarin.Forms.Platform.Android
 			return layout;
 		}
 
+		internal void InvalidatePrototypicalCellCache()
+		{
+			_prototypicalCellByTypeOrDataTemplate.Clear();
+		}
+
+		//internal Cell GetPrototypicalCell(int indexPath)
+		//{
+		//	var itemTypeOrDataTemplate = default(object);
+
+		//	var cachingStrategy = _listView.CachingStrategy;
+		//	if (cachingStrategy == ListViewCachingStrategy.RecycleElement)
+		//		itemTypeOrDataTemplate = GetDataTemplateForPath(indexPath);
+
+		//	else if (cachingStrategy == ListViewCachingStrategy.RecycleElementAndDataTemplate)
+		//		itemTypeOrDataTemplate = GetItemTypeForPath(indexPath);
+
+		//	else // ListViewCachingStrategy.RetainElement
+		//		return GetCellForPosition(indexPath);
+
+		//	Cell protoCell;
+		//	if (!_prototypicalCellByTypeOrDataTemplate.TryGetValue(itemTypeOrDataTemplate, out protoCell))
+		//	{
+		//		// cache prototypical cell by item type; Items of the same Type share
+		//		// the same DataTemplate (this is enforced by RecycleElementAndDataTemplate)
+		//		protoCell = GetCellForPosition(indexPath);
+		//		_prototypicalCellByTypeOrDataTemplate[itemTypeOrDataTemplate] = protoCell;
+		//	}
+
+		//	var templatedItems = GetTemplatedItemsListForPath(indexPath);
+		//	return templatedItems.UpdateContent(protoCell, indexPath.Row);
+		//}
+
 		public override bool IsEnabled(int position)
 		{
 			ListView list = _listView;
@@ -321,7 +355,8 @@ namespace Xamarin.Forms.Platform.Android
 				return leftOver > 0;
 			}
 
-			if ((((IListViewController)list).CachingStrategy & ListViewCachingStrategy.RecycleElement) != 0)
+			var strategy = ((IListViewController)list).CachingStrategy;
+			if (strategy == ListViewCachingStrategy.RetainElement)
 			{
 				if (_enabledCheckCell == null)
 					_enabledCheckCell = GetCellForPosition(position);
