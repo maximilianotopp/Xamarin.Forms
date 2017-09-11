@@ -834,6 +834,9 @@ namespace Xamarin.Forms.Platform.iOS
 				Cell cell;
 				UITableViewCell nativeCell;
 
+				var reference = Guid.NewGuid().ToString();
+				Performance.Start(reference);
+
 				var cachingStrategy = List.CachingStrategy;
 				if (cachingStrategy == ListViewCachingStrategy.RetainElement)
 				{
@@ -867,6 +870,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 				SetCellBackgroundColor(nativeCell, bgColor);
 				PreserveActivityIndicatorState(cell);
+				Performance.Stop(reference);
 				return nativeCell;
 			}
 		
